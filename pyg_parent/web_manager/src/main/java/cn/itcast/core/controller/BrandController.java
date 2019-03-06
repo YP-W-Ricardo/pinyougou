@@ -18,10 +18,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/brand")
 public class BrandController {
-
     @Reference
     private BrandService brandService;
-
+//测试
     /**
      * 查询品牌所有数据
      * @return
