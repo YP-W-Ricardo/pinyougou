@@ -22,7 +22,7 @@ public class GoodsController {
 //    private SolrManagerService solrManagerService;
 
 
-    //第二次
+    //第二次///
     /**
      * 商品添加
      * @param goodsEntity
