@@ -10,3 +10,4 @@ gen
 .classpath
 *.eml
 target
+db.properties
