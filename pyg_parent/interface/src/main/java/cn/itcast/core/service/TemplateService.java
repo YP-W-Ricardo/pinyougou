@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface TemplateService {
 
-    public PageResult findPage(Integer page, Integer rows, TypeTemplate template);
+    public PageResult findPage(TypeTemplate template, Integer page, Integer rows);
 
     public void add(TypeTemplate template);
 
@@ -16,7 +16,11 @@ public interface TemplateService {
 
     public void update(TypeTemplate template);
 
-    public void  delete(Long[] ids);
+    public void delete(Long[] ids);
 
     public List<Map> findBySpecList(Long id);
+    /**
+     * 模板审核
+     */
+    public void updateStatus(Long[] ids, String status);
 }

@@ -38,8 +38,8 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 			}			
 		);
 	}
-	
-	//查询实体 
+    //查询实体
+
 	$scope.findOne=function(id){				
 		typeTemplateService.findOne(id).success(
 			function(response){
@@ -49,7 +49,7 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 				
 				$scope.entity.specIds = JSON.parse($scope.entity.specIds);
 				
-				$scope.entity.customAttributeItems = JSON.parse($scope.entity.customAttributeItems);
+				$scope.entity.customAttributeIftems = JSON.parse($scope.entity.customAttributeItems);
 			}
 		);				
 	}
@@ -100,10 +100,11 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 		);
 	}
 
-    //$scope.brandList={data:[{id:1,text:'联想'},{id:2,text:'华为'},{id:3,text:'小米'}]};//品牌列表
-	$scope.brandList={data:[]}
+    $scope.brandList={data:[{id:1,text:'联想'},{id:2,text:'华为'},{id:3,text:'小米'}]};//品牌列表
+	//$scope.brandList={data:[]}
 	// 查询关联的品牌信息:
 	$scope.findBrandList = function(){
+		//$scope.brandList={data:[{id:1,text:'联想'},{id:2,text:'华为'},{id:3,text:'小米'}]};//品牌列表
 		brandService.selectOptionList().success(function(response){
 			$scope.brandList = {data:response};
 		});

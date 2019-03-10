@@ -1,14 +1,17 @@
-//控制层 
-app.controller('typeTemplateController' ,function($scope,$controller,brandService ,specificationService  ,typeTemplateService){	
+ //控制层 
+app.controller('itemCatController' ,function($scope,$controller   ,itemCatService){	
 	
 	$controller('baseController',{$scope:$scope});//继承
 
     // 显示状态
     $scope.status = ["未审核","审核通过","审核未通过","关闭"];
+    //=======================
+
+
 
     //// 审核的方法:
     $scope.updateStatus = function(status){
-        typeTemplateService.updateStatus($scope.selectIds,status).success(function(response){
+        itemCatService.updateStatus($scope.selectIds,status).success(function(response){
             if(response.success){
                 $scope.reloadList();//刷新列表
                 $scope.selectIds = [];
@@ -18,11 +21,10 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
         });
     }
 
-
-
+	
     //读取列表数据绑定到表单中  
 	$scope.findAll=function(){
-		typeTemplateService.findAll().success(
+		itemCatService.findAll().success(
 			function(response){
 				$scope.list=response;
 			}			
@@ -31,7 +33,7 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 	
 	//分页
 	$scope.findPage=function(page,rows){			
-		typeTemplateService.findPage(page,rows).success(
+		itemCatService.findPage(page,rows).success(
 			function(response){
 				$scope.list=response.rows;	
 				$scope.paginationConf.totalItems=response.total;//更新总记录数
@@ -41,15 +43,9 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 	
 	//查询实体 
 	$scope.findOne=function(id){				
-		typeTemplateService.findOne(id).success(
+		itemCatService.findOne(id).success(
 			function(response){
-				$scope.entity= response;	
-				// eval()   JSON.parse();   
-				$scope.entity.brandIds = JSON.parse($scope.entity.brandIds);
-				
-				$scope.entity.specIds = JSON.parse($scope.entity.specIds);
-				
-				$scope.entity.customAttributeItems = JSON.parse($scope.entity.customAttributeItems);
+				$scope.entity= response;					
 			}
 		);				
 	}
@@ -58,9 +54,9 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 	$scope.save=function(){				
 		var serviceObject;//服务层对象  				
 		if($scope.entity.id!=null){//如果有ID
-			serviceObject=typeTemplateService.update( $scope.entity ); //修改  
+			serviceObject=itemCatService.update( $scope.entity ); //修改  
 		}else{
-			serviceObject=typeTemplateService.add( $scope.entity  );//增加 
+			serviceObject=itemCatService.add( $scope.entity  );//增加 
 		}				
 		serviceObject.success(
 			function(response){
@@ -78,7 +74,7 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 	//批量删除 
 	$scope.dele=function(){			
 		//获取选中的复选框			
-		typeTemplateService.dele( $scope.selectIds ).success(
+		itemCatService.dele( $scope.selectIds ).success(
 			function(response){
 				if(response.success){
 					$scope.reloadList();//刷新列表
@@ -92,39 +88,43 @@ app.controller('typeTemplateController' ,function($scope,$controller,brandServic
 	
 	//搜索
 	$scope.search=function(page,rows){			
-		typeTemplateService.search(page,rows,$scope.searchEntity).success(
+		itemCatService.search(page,rows,$scope.searchEntity).success(
 			function(response){
 				$scope.list=response.rows;	
 				$scope.paginationConf.totalItems=response.total;//更新总记录数
 			}			
 		);
 	}
-
-    //$scope.brandList={data:[{id:1,text:'联想'},{id:2,text:'华为'},{id:3,text:'小米'}]};//品牌列表
-	$scope.brandList={data:[]}
-	// 查询关联的品牌信息:
-	$scope.findBrandList = function(){
-		brandService.selectOptionList().success(function(response){
-			$scope.brandList = {data:response};
-		});
-	}
-
-
-	$scope.specList={data:[]}
-	// 查询关联的品牌信息:
-	$scope.findSpecList = function(){
-		specificationService.selectOptionList().success(function(response){
-			$scope.specList = {data:response};
+	
+	// 根据父ID查询分类
+	$scope.findByParentId =function(parentId){
+		itemCatService.findByParentId(parentId).success(function(response){
+			$scope.list=response;
 		});
 	}
 	
-	//给扩展属性添加行
-	$scope.entity={customAttributeItems:[]};
-	$scope.addTableRow = function(){
-		$scope.entity.customAttributeItems.push({});
+	// 定义一个变量记录当前是第几级分类
+	$scope.grade = 1;
+	
+	$scope.setGrade = function(value){
+		$scope.grade = value;
 	}
 	
-	$scope.deleteTableRow = function(index){
-		$scope.entity.customAttributeItems.splice(index,1);
+	$scope.selectList = function(p_entity){
+		
+		if($scope.grade == 1){
+			$scope.entity_1 = null;
+			$scope.entity_2 = null;
+		}
+		if($scope.grade == 2){
+			$scope.entity_1 = p_entity;
+			$scope.entity_2 = null;
+		}
+		if($scope.grade == 3){
+			$scope.entity_2 = p_entity;
+		}
+		
+		$scope.findByParentId(p_entity.id);
 	}
+
 });	

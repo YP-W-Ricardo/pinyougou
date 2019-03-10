@@ -36,7 +36,7 @@
 
 </head>
 
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="typeTemplateController" ng-init="findBrandList();findSpecList()" ng-init="searchEntity={status:'0'}">
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="typeTemplateController" ng-init="findBrandList();findSpecList()">
 <!-- .box-body -->
 
 <div class="box-header with-border">
@@ -54,24 +54,16 @@
 				<div class="btn-group">
 					<button type="button" class="btn btn-default" title="新建"  data-toggle="modal" data-target="#editModal" ng-click="entity={customAttributeItems:[]}"><i class="fa fa-file-o"></i> 新建</button>
 					<button type="button" class="btn btn-default" ng-click="dele()" title="删除"><i class="fa fa-trash-o"></i> 删除</button>
-					<!--审核-->
 					<button type="button" ng-click="updateStatus('1')" class="btn btn-default" title="审核通过" ><i class="fa fa-check"></i> 审核通过</button>
-					<button type="button" ng-click="updateStatus('2')" class="btn btn-default" title="驳回" ><i class="fa fa-ban"></i> 驳回</button>
-					<!--审核结束-->
-					<button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
+					<button type="button" ng-click="updateStatus('0')" class="btn btn-default" title="驳回" ><i class="fa fa-ban"></i> 驳回</button>
+					<button type="button" class="btn btn-default" title="刷新" ><i class="fa fa-refresh"></i> 刷新</button>
 				</div>
 			</div>
 		</div>
 		<div class="box-tools pull-right">
 			<div class="has-feedback">
-				状态:<select ng-model="searchEntity.status">
-						<option value="">全部</option>
-						<option value="0">未审核</option>
-						<option value="1">已审核</option>
-
-					</select>
-				分类模板名称：<input  type="text" ng-model="searchEntity.name">
-				<button class="btn btn-default" ng-click="reloadList()">查询</button>
+				分类模板名称：<input  >
+				<button class="btn btn-default">查询</button>
 			</div>
 		</div>
 		<!--工具栏/-->
@@ -89,7 +81,7 @@
 				<th class="sorting">关联规格</th>
 				<th class="sorting">扩展属性</th>
 				<th class="text-center">操作</th>
-				<th class="sorting">状态</th>
+				<th class="text-center">状态</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -101,12 +93,14 @@
 				<td>{{jsonToString(entity.specIds,'text')}}</td>
 				<td>{{jsonToString(entity.customAttributeItems,'text')}}</td>
 				<td class="text-center">
-					<button type="button" class="btn bg-olive btn-xs" ng-click="findOne(entity.id)" data-toggle="modal" data-target="#editModal" >修改</button>
+					<button type="button" class="btn bg-olive btn-xs" ng-click="findOne(entity.id)" data-toggle="modal" data-target="#editModal" >详情</button>
 				</td>
+
 				<td>
 										  <span>
-		                                  		{{status[entity.status]}}
-		                                  	</span>
+											  <!--{{status[entity.temStatus]}}-->
+											  {{"已申请"}}
+											  </span>
 				</td>
 			</tr>
 			</tbody>
@@ -148,9 +142,9 @@
 							<!--
                                 ng-model:绑定下拉列表的id
                                 select2-model:绑定下拉列表的id和value
-                                config:代表的是数据的来源
-                                multiple:写上这个属性是多选, 不写是单选
-                                placeholder: 下拉框没有选择数据的时候默认的提示信息
+                                config:代表的是数据的来源, 也就是数据集合, 但是这个数据集合格式有一定的要求
+                                multiple表示是否多选, 有multiple可以多选, 没有则只能单选
+                                placeholder默认的提示文字, 当鼠标选中的时候, 提示文字消失
                              -->
 							<input select2 select2-model="entity.brandIds" config="brandList" multiple placeholder="支持多选哦" class="form-control" type="text"/>
 						</td>

@@ -4,6 +4,8 @@ import cn.itcast.core.common.Constants;
 import cn.itcast.core.dao.specification.SpecificationOptionDao;
 import cn.itcast.core.dao.template.TypeTemplateDao;
 import cn.itcast.core.pojo.entity.PageResult;
+import cn.itcast.core.pojo.item.Item;
+import cn.itcast.core.pojo.item.ItemQuery;
 import cn.itcast.core.pojo.specification.SpecificationOption;
 import cn.itcast.core.pojo.specification.SpecificationOptionQuery;
 import cn.itcast.core.pojo.template.TypeTemplate;
@@ -33,38 +35,34 @@ public class TemplateServiceImpl implements TemplateService {
     private RedisTemplate redisTemplate;
 
     @Override
-    public PageResult findPage(Integer page, Integer rows, TypeTemplate template) {
-        /**
-         * 查询模板所有数据, 以模板id作为key, 对应的品牌集合作为value存入Redis中
-         * 查询模板所有数据, 以模板id作为key, 对应的规格集合作为value存入Redis中
-         */
-        List<TypeTemplate> templates = templateDao.selectByExample(null);
-        if (templates != null) {
-            for (TypeTemplate typeTemplate : templates) {
-                //根据模板id作为key, 品牌集合作为value存入reids
-                String brandJsonStr = typeTemplate.getBrandIds();
-                List<Map> brandList = JSON.parseArray(brandJsonStr, Map.class);
-                redisTemplate.boundHashOps(Constants.REDIS_BRAND_LIST).put(typeTemplate.getId(), brandList);
+    public PageResult findPage(TypeTemplate template, Integer page, Integer rows) {
+        //1. 查询所有模板数据
+        List<TypeTemplate> typeTemplates = templateDao.selectByExample(null);
 
-                //模板id作为key, 规格集合作为value存入redis
-                List<Map> specList = findBySpecList(typeTemplate.getId());
-                redisTemplate.boundHashOps(Constants.REDIS_SPEC_LIST).put(typeTemplate.getId(), specList);
-            }
+        for (TypeTemplate typeTemplate : typeTemplates) {
+            //2. 模板id作为key, 对应的品牌集合作为value, 缓存入redis中
+            String brandIdsJsonStr = typeTemplate.getBrandIds();
+            List<Map> brandList = JSON.parseArray(brandIdsJsonStr, Map.class);
+            //缓存品牌集合数据
+            redisTemplate.boundHashOps(Constants.REDIS_BRAND_LIST).put(typeTemplate.getId(), brandList);
+
+            //3. 模板id作为key, 对应的规格集合作为value, 缓存入redis中
+            List<Map> specList = findBySpecList(typeTemplate.getId());
+            redisTemplate.boundHashOps(Constants.REDIS_SPEC_LIST).put(typeTemplate.getId(), specList);
         }
 
 
-        /**
-         * 分页查询
-         */
+
+        //4. 分页查询, 并且将数据返回到页面展示
+        PageHelper.startPage(page, rows);
         TypeTemplateQuery query = new TypeTemplateQuery();
         TypeTemplateQuery.Criteria criteria = query.createCriteria();
         if (template != null) {
-            if (template.getName() != null && !"".equals(template.getName())) {
+            if (template.getName() != null && !"".equals(template.getName())){
                 criteria.andNameLike("%"+template.getName()+"%");
             }
         }
 
-        PageHelper.startPage(page, rows);
         Page<TypeTemplate> templateList = (Page<TypeTemplate>)templateDao.selectByExample(query);
         return new PageResult(templateList.getTotal(), templateList.getResult());
     }
@@ -95,27 +93,49 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Override
     public List<Map> findBySpecList(Long id) {
-        //1. 根据模板id查询模板对象
+        //1. 根据模板id查询对应的模板对象
         TypeTemplate typeTemplate = templateDao.selectByPrimaryKey(id);
-        //2. 从模板对象中获取规格的json字符串
-        String jsonStr = typeTemplate.getSpecIds();
-        //3. 解析规格json字符串
-        List<Map> maps = JSON.parseArray(jsonStr, Map.class);
+        //2. 从模板对象中获取规格集合的json数据(字符串,,ll,m 类型)
+        String specIds = typeTemplate.getSpecIds();
 
-        //4. 遍历规格集合
+         //3. 将json字符串类型的规格集合转换成Java对象,
+        //使用阿里的json转化工具, 将json字符串转换成list集合, 第一个参数是转换的字符串, 第二个参数指定集合泛型的类型
+        //这是一个map例如: id:1, text网络      这有是一个map,例如: id:32, text: 机身网络
+        List<Map> maps = JSON.parseArray(specIds, Map.class);
+        //4. 遍历规格集合数据
         if (maps != null) {
             for (Map map : maps) {
-                //5. 遍历过程中, 根据规格id, 查询对应的规格选项集合
-                Long specId = Long.parseLong(String.valueOf(map.get("id")));
+                //5. 在遍历的过程中将根据规格id获取对应的规格选项集合, 并且封装到规格对象中
+                Long specId= Long.parseLong(String.valueOf(map.get("id")));
+
                 SpecificationOptionQuery query = new SpecificationOptionQuery();
                 SpecificationOptionQuery.Criteria criteria = query.createCriteria();
                 criteria.andSpecIdEqualTo(specId);
+                //根据规格id查询到规格选项集合
                 List<SpecificationOption> optionList = optionDao.selectByExample(query);
-                //6. 将规格选项集合, 封装回规格集合中
                 map.put("options", optionList);
+            }
+        }
+
+        return maps;
+    }
+    /**
+     * 模板审核
+     * @param ids
+     * @param status
+     */
+    @Override
+    public void updateStatus(Long[] ids, String status) {
+        if (ids != null) {
+            for (Long id : ids) {
+                TypeTemplate typeTemplate = new TypeTemplate();
+                typeTemplate.setId(id);
+                typeTemplate.setStatus(status);
+                templateDao.updateByPrimaryKeySelective(typeTemplate);
+
 
             }
         }
-        return maps;
+
     }
 }

@@ -5,7 +5,6 @@ import cn.itcast.core.pojo.entity.SpecEntity;
 import cn.itcast.core.pojo.specification.Specification;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SpecService {
 
@@ -19,5 +18,5 @@ public interface SpecService {
 
     public void delete(Long[] ids);
 
-    public List<Map> selectOptionList();
+    public List<Specification> selectOptionList();
 }

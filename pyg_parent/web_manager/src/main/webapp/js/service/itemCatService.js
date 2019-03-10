@@ -1,6 +1,11 @@
 //服务层
 app.service('itemCatService',function($http){
-	    	
+
+    //审核状态
+    this.updateStatus = function(ids,status){
+        return $http.get('../itemCat/updateStatus.do?ids='+ids+"&status="+status);
+    }
+
 	//读取列表数据绑定到表单中
 	this.findAll=function(){
 		return $http.get('../itemCat/findAll.do');		
@@ -33,4 +38,6 @@ app.service('itemCatService',function($http){
 	this.findByParentId = function(parentId){
 		return $http.get("../itemCat/findByParentId.do?parentId="+parentId);
 	}
+
+
 });

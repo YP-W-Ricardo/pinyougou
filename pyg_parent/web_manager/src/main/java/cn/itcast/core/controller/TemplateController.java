@@ -13,39 +13,42 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/typeTemplate")
 public class TemplateController {
 
-    @Reference
+
+
+      @Reference
     private TemplateService templateService;
 
     @RequestMapping("/search")
-    public PageResult search(Integer page, Integer rows, @RequestBody TypeTemplate template) {
-        PageResult pageResult = templateService.findPage(page, rows, template);
-        return pageResult;
+    public PageResult search(@RequestBody TypeTemplate template, Integer page, Integer rows) {
+        PageResult result = templateService.findPage(template, page, rows);
+        return result;
     }
 
     @RequestMapping("/add")
     public Result add(@RequestBody TypeTemplate template) {
         try {
             templateService.add(template);
-            return  new Result(true, "添加成功!");
+            return new Result(true, "保存成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false, "添加失败!");
+            return new Result(false, "保存失败!");
         }
     }
 
     @RequestMapping("/findOne")
     public TypeTemplate findOne(Long id) {
-        return templateService.findOne(id);
+        TypeTemplate one = templateService.findOne(id);
+        return one;
     }
 
     @RequestMapping("/update")
-    public Result update(@RequestBody TypeTemplate template) {
+    public  Result update(@RequestBody TypeTemplate template) {
         try {
             templateService.update(template);
-            return  new Result(true, "修改成功!");
+            return new Result(true, "保存成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false, "修改失败!");
+            return new Result(false, "保存失败!");
         }
     }
 
@@ -53,10 +56,26 @@ public class TemplateController {
     public Result delete(Long[] ids) {
         try {
             templateService.delete(ids);
-            return  new Result(true, "删除成功!");
+            return new Result(true, "删除成功!");
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false, "删除失败!");
+        }
+    }
+    /**
+     * 审核
+     * @param ids
+     * @param status
+     * @return
+     */
+    @RequestMapping("/updateStatus")
+    public Result updateStatus(Long[] ids, String status) {
+        try {
+            templateService.updateStatus(ids,status);
+            return new Result(true, "成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, "失败");
         }
     }
 }

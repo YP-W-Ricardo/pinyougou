@@ -30,5 +30,5 @@ public interface SpecificationDao {
 
     int updateByPrimaryKey(Specification record);
 
-    public List<Map> selectOptionList();
+    public List<Specification> selectOptionList();
 }

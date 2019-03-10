@@ -1,5 +1,7 @@
 package cn.itcast.core.dao.specification;
 
+import cn.itcast.core.pojo.item.Item;
+import cn.itcast.core.pojo.item.ItemQuery;
 import cn.itcast.core.pojo.specification.SpecificationOption;
 import cn.itcast.core.pojo.specification.SpecificationOptionQuery;
 import java.util.List;
@@ -20,7 +22,7 @@ public interface SpecificationOptionDao {
 
     SpecificationOption selectByPrimaryKey(Long id);
 
-    int updateByExampleSelective(@Param("record") SpecificationOption record, @Param("example") SpecificationOptionQuery example);
+    int updateByExampleSelective(@Param("record") Item record, @Param("example") ItemQuery example);
 
     int updateByExample(@Param("record") SpecificationOption record, @Param("example") SpecificationOptionQuery example);
 

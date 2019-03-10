@@ -25,6 +25,16 @@ public class TypeTemplate implements Serializable {
      */
     private String customAttributeItems;
 
+    /**
+     * 状态
+     */
+    private String status;
+
+    /**
+     * 商家id
+     */
+    private String sellerId;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -67,6 +77,22 @@ public class TypeTemplate implements Serializable {
         this.customAttributeItems = customAttributeItems == null ? null : customAttributeItems.trim();
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim();
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId == null ? null : sellerId.trim();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -78,6 +104,8 @@ public class TypeTemplate implements Serializable {
         sb.append(", specIds=").append(specIds);
         sb.append(", brandIds=").append(brandIds);
         sb.append(", customAttributeItems=").append(customAttributeItems);
+        sb.append(", status=").append(status);
+        sb.append(", sellerId=").append(sellerId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
@@ -99,7 +127,9 @@ public class TypeTemplate implements Serializable {
             && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
             && (this.getSpecIds() == null ? other.getSpecIds() == null : this.getSpecIds().equals(other.getSpecIds()))
             && (this.getBrandIds() == null ? other.getBrandIds() == null : this.getBrandIds().equals(other.getBrandIds()))
-            && (this.getCustomAttributeItems() == null ? other.getCustomAttributeItems() == null : this.getCustomAttributeItems().equals(other.getCustomAttributeItems()));
+            && (this.getCustomAttributeItems() == null ? other.getCustomAttributeItems() == null : this.getCustomAttributeItems().equals(other.getCustomAttributeItems()))
+            && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
+            && (this.getSellerId() == null ? other.getSellerId() == null : this.getSellerId().equals(other.getSellerId()));
     }
 
     @Override
@@ -111,6 +141,8 @@ public class TypeTemplate implements Serializable {
         result = prime * result + ((getSpecIds() == null) ? 0 : getSpecIds().hashCode());
         result = prime * result + ((getBrandIds() == null) ? 0 : getBrandIds().hashCode());
         result = prime * result + ((getCustomAttributeItems() == null) ? 0 : getCustomAttributeItems().hashCode());
+        result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
+        result = prime * result + ((getSellerId() == null) ? 0 : getSellerId().hashCode());
         return result;
     }
 }
